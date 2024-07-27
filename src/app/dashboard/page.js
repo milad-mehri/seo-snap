@@ -58,19 +58,19 @@ const Dashboard = () => {
   }, [selectedLink]);
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen bg-bg-dark text-text-primary">
       <Sidebar links={links} onLinkSelect={handleLinkSelect} />
-      <main className="flex-1 p-4 bg-gray-700 text-white">
+      <main className="flex-1 p-4 bg-bg-dark text-text-primary">
         <div className="mb-4">
           <input
             type="text"
             placeholder="Enter link here"
-            className="w-full p-2 rounded bg-gray-900 text-white"
+            className="w-full p-2 rounded bg-sidebar-bg text-text-primary"
             onKeyDown={handleAddLink}
           />
         </div>
         <h2 className="text-2xl mb-2">Results for: {selectedLink}</h2>
-        {error && <p className="text-red-500">{error}</p>}
+        {error && <p className="text-error">{error}</p>}
         {loading ? <p>Loading...</p> : <ResultsDisplay results={results} />}
       </main>
     </div>

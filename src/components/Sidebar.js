@@ -10,7 +10,7 @@ const Sidebar = ({ links, onLinkSelect }) => {
   };
 
   return (
-    <div className="w-1/5 bg-gray-800 text-white p-4">
+    <div className="w-1/5 bg-sidebar-bg text-c5 p-4">
       <h2 className="text-2xl mb-4">Your Links</h2>
       <ul>
         {links.map((link, index) => (
