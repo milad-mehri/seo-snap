@@ -69,7 +69,7 @@ const Dashboard = () => {
 
   return (
     <div className="flex min-h-screen bg-bg-dark text-text-primary">
-      <Sidebar links={links} onLinkSelect={handleLinkSelect} />
+      <Sidebar links={links} selectedLink={selectedLink} onLinkSelect={handleLinkSelect} />
       <main className="flex-1 p-4">
         <div className="mb-4">
           <div className="flex items-center space-x-2">
