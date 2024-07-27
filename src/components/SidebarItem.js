@@ -1,5 +1,3 @@
-// src/app/components/SidebarItem.js
-
 const SidebarItem = ({ link, isSelected, onClick }) => {
     return (
       <li

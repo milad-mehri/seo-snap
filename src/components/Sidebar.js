@@ -1,5 +1,3 @@
-// src/app/components/Sidebar.js
-
 import { useState } from 'react';
 import SidebarItem from './SidebarItem';
 

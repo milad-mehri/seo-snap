@@ -1,25 +1,61 @@
-// src/app/dashboard/page.js
 "use client";
-import { useState } from "react";
-import Sidebar from "../../components/Sidebar";
+
+import { useState, useEffect } from 'react';
+import Sidebar from '../../components/Sidebar';
+import ResultsDisplay from '../../components/ResultsDisplay';
 
 const Dashboard = () => {
-  const [links, setLinks] = useState([]);
+  const [links, setLinks] = useState([
+    'https://milad-mehri.github.io/',
+    'https://headstarter.co/',
+    'https://www.google.com/' // replace with users saved links later
+  ]);
   const [selectedLink, setSelectedLink] = useState(links[0]);
+  const [results, setResults] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleLinkSelect = (link) => {
     setSelectedLink(link);
   };
-  
+
   const handleAddLink = (e) => {
-    if (e.key === "Enter" && e.target.value) {
+    if (e.key === 'Enter' && e.target.value) {
       const newLink = e.target.value;
       if (!links.includes(newLink)) {
         setLinks([...links, newLink]);
       }
-      e.target.value = "";
+      e.target.value = '';
     }
   };
+
+  useEffect(() => {
+    const fetchResults = async () => {
+      try {
+        setLoading(true); // Set loading to true
+        setError(''); 
+        const response = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ url: selectedLink }),
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        setResults(result);
+      } catch (error) {
+        console.error('Failed to fetch analysis results:', error);
+        setError('Failed to fetch analysis results.');
+      } finally {
+        setLoading(false); // Set loading to false
+      }
+    };
+
+    fetchResults();
+  }, [selectedLink]);
 
   return (
     <div className="flex min-h-screen">
@@ -34,9 +70,8 @@ const Dashboard = () => {
           />
         </div>
         <h2 className="text-2xl mb-2">Results for: {selectedLink}</h2>
-        <div>
-          <p>SELECTED LINK</p>
-        </div>
+        {error && <p className="text-red-500">{error}</p>}
+        {loading ? <p>Loading...</p> : <ResultsDisplay results={results} />}
       </main>
     </div>
   );
