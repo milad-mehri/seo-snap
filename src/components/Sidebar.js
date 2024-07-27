@@ -1,11 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SidebarItem from './SidebarItem';
 
-const Sidebar = ({ links, onLinkSelect }) => {
-  const [selectedLink, setSelectedLink] = useState(links[0]);
+const Sidebar = ({ links, selectedLink, onLinkSelect }) => {
+  const [internalSelectedLink, setInternalSelectedLink] = useState(selectedLink);
+
+  useEffect(() => {
+    setInternalSelectedLink(selectedLink);
+  }, [selectedLink]);
 
   const handleLinkClick = (link) => {
-    setSelectedLink(link);
+    setInternalSelectedLink(link);
     onLinkSelect(link);
   };
 
@@ -17,7 +21,7 @@ const Sidebar = ({ links, onLinkSelect }) => {
           <SidebarItem
             key={index}
             link={link}
-            isSelected={link === selectedLink}
+            isSelected={link === internalSelectedLink}
             onClick={handleLinkClick}
           />
         ))}

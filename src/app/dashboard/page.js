@@ -14,18 +14,28 @@ const Dashboard = () => {
   const [results, setResults] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [newLink, setNewLink] = useState('');
+  const [shareLink, setShareLink] = useState(false);
 
   const handleLinkSelect = (link) => {
     setSelectedLink(link);
   };
 
-  const handleAddLink = (e) => {
-    if (e.key === 'Enter' && e.target.value) {
-      const newLink = e.target.value;
-      if (!links.includes(newLink)) {
+  const handleAddLink = () => {
+    if (newLink) {
+      if (links.includes(newLink)) {
+        setSelectedLink(newLink); // Select the existing link
+      } else {
         setLinks([...links, newLink]);
+        setSelectedLink(newLink); // Select the new link
       }
-      e.target.value = '';
+      setNewLink('');
+      setShareLink(false)
+    }
+  };
+  const handleInputKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      handleAddLink();
     }
   };
 
@@ -33,7 +43,7 @@ const Dashboard = () => {
     const fetchResults = async () => {
       try {
         setLoading(true); // Set loading to true
-        setError(''); 
+        setError('');
         const response = await fetch('/api/analyze', {
           method: 'POST',
           headers: {
@@ -60,14 +70,36 @@ const Dashboard = () => {
   return (
     <div className="flex min-h-screen bg-bg-dark text-text-primary">
       <Sidebar links={links} onLinkSelect={handleLinkSelect} />
-      <main className="flex-1 p-4 bg-bg-dark text-text-primary">
+      <main className="flex-1 p-4">
         <div className="mb-4">
-          <input
-            type="text"
-            placeholder="Enter link here"
-            className="w-full p-2 rounded bg-sidebar-bg text-text-primary"
-            onKeyDown={handleAddLink}
-          />
+          <div className="flex items-center space-x-2">
+            <input
+              type="text"
+              placeholder="Enter link here"
+              className="w-full p-2 rounded bg-sidebar-bg text-text-primary"
+              value={newLink}
+              onChange={(e) => setNewLink(e.target.value)}
+              onKeyDown={handleInputKeyDown}
+            />
+            <button
+              className="p-2 bg-blue-500 text-white rounded"
+              onClick={handleAddLink}
+            >
+              Analyze
+            </button>
+          </div>
+          <div className="flex items-center mt-2">
+            <input
+              type="checkbox"
+              id="shareLink"
+              checked={shareLink}
+              onChange={(e) => setShareLink(e.target.checked)}
+              className="mr-2"
+            />
+            <label htmlFor="shareLink" className="text-text-secondary">
+              Share link on SEO snap to get more views (optional)
+            </label>
+          </div>
         </div>
         <h2 className="text-2xl mb-2">Results for: {selectedLink}</h2>
         {error && <p className="text-error">{error}</p>}

@@ -1,10 +1,10 @@
 const SidebarItem = ({ link, isSelected, onClick }) => {
     return (
       <li
-        className={`p-2 my-2 rounded cursor-pointer ${isSelected ? 'bg-sidebar-item-bg' : 'bg-sidebar-item-active-bg'}`}
+        className={`p-2 mb-2 rounded cursor-pointer ${isSelected ? 'bg-sidebar-item-active-bg' : 'bg-sidebar-item-bg'} text-text-primary`}
         onClick={() => onClick(link)}
       >
-        <div className="truncate">{link}</div>
+        {link}
       </li>
     );
   };
