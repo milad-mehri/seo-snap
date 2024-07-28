@@ -23,11 +23,11 @@ const ResultsDisplay = ({ results }) => {
           const statusColor = getStatusColor(status);
   
           return (
-            <div key={index} className="flex justify-between p-2 my-2 bg-gray-800 rounded">
-              <span className="text-blue-300 w-1/4">{key}</span>
-              <span className={`w-1/4 ${statusColor}`}>{status}</span>
-              <span className="text-green-500 w-1/4">{score}</span>
-              <span className="text-gray-500 w-1/4">{message || 'No message'}</span>
+            <div key={index} className="flex justify-between p-2 my-2 bg-sidebar-bg rounded">
+              <span className="text-text-secondary font-semibold w-1/4">{key}</span>
+              <span className={`font-semibold w-1/4 ${statusColor}`}>{status}</span>
+              <span className={`font-semibold ${statusColor} w-1/4`}>{score}</span>
+              <span className="font-semibold text-gray-500 w-1/4">{message || 'No message'}</span>
             </div>
           );
         })}

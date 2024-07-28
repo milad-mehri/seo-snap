@@ -8,15 +8,15 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'bg-dark': '#1E1E2F',
-        'sidebar-bg': '#27293D',
-        'sidebar-item-bg': '#393b47',
-        'sidebar-item-active-bg': '#3C3F58',
-        'text-primary': '#FFFFFF',
-        'text-secondary': '#B0B3C5',
-        'success': '#5ECB78',
-        'warning': '#E9C46A',
-        'error': '#E76F51',
+        'main-bg': '#0D1117', 
+        'sidebar-bg': '#161B22', 
+        'text-primary': '#C9D1D9', 
+        'text-secondary': '#8B949E', 
+        'sidebar-item-bg': '#21262D', 
+        'sidebar-item-active-bg': '#30363D',
+        'success': '#238636',
+        'error': '#DA3633', 
+        'warning': '#F6C12D', 
       },
       backgroundImage: {
         "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",

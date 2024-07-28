@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import SidebarItem from './SidebarItem';
 
-const Sidebar = ({ links, selectedLink, onLinkSelect }) => {
+const Sidebar = ({ links, selectedLink, onLinkSelect, onLinkRemove }) => {
   const [internalSelectedLink, setInternalSelectedLink] = useState(selectedLink);
 
   useEffect(() => {
@@ -14,8 +14,8 @@ const Sidebar = ({ links, selectedLink, onLinkSelect }) => {
   };
 
   return (
-    <div className="w-1/5 bg-sidebar-bg text-c5 p-4">
-      <h2 className="text-2xl mb-4">Your Links</h2>
+    <div className="w-1/5 bg-sidebar-bg p-6">
+      <h2 className="text-l font-bold mb-6 text-text-primary">YOUR LINKS</h2>
       <ul>
         {links.map((link, index) => (
           <SidebarItem
@@ -23,6 +23,7 @@ const Sidebar = ({ links, selectedLink, onLinkSelect }) => {
             link={link}
             isSelected={link === internalSelectedLink}
             onClick={handleLinkClick}
+            onRemove={onLinkRemove}
           />
         ))}
       </ul>
