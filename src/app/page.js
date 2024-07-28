@@ -1,6 +1,7 @@
 import Link from 'next/link'
 
 import GoogleSignIn from '../components/GoogleSignIn';
+import { AuthProvider } from '../lib/AuthContext';
 
 
 export default function Home() {
@@ -21,8 +22,11 @@ export default function Home() {
       <p>
            Would you like to login and save your Analysis?
         <div>
-          <h1>Login</h1>
+          <AuthProvider>
+
           <GoogleSignIn />
+          </AuthProvider>
+          
         </div>
 
       </p>

@@ -17,6 +17,7 @@ export default function Navbar() {
         <h1>SEO Snap</h1>
         <Link href="/">Home</Link>
         <Link href="/dashboard">Dashboard</Link>
+        
     </nav>
   )
 }

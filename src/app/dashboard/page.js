@@ -11,9 +11,9 @@ import { auth } from '../lib/firebaseConfig';
 
 
 export const getServerSideProps = async (context) => {
-  const user = await auth.currentUser;
+  const users = await auth.currentUser;
 
-  if (!user) {
+  if (!users) {
     return {
       redirect: {
         destination: '/login',
@@ -23,7 +23,7 @@ export const getServerSideProps = async (context) => {
   }
 
   return {
-    props: { user },
+    props: { users },
   };
 };
 
@@ -80,17 +80,11 @@ const Dashboard = ({user}) => {
     fetchResults();
   }, [selectedLink]);
 
-
-  const { user } = useAuth();
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   return (
     
     
     <div className="flex min-h-screen">
+      
       <h1>Welcome, {user?.displayName}</h1>
       <Logout />
 
