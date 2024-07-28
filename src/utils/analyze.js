@@ -103,6 +103,8 @@ export const analyze = async (url) => {
     score["favicon"] = favicon ? [100, "Favicon present"] : [0, "Favicon missing"];
 
   } catch (e) {
+    console.log(e)
+    score = {}
     score["Link invalid"] = [0, "Error"];
   }
   return score;
