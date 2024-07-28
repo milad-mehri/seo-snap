@@ -15,6 +15,7 @@ const Dashboard = () => {
     return savedLinks
       ? JSON.parse(savedLinks)
       : [
+        "https://seo-snap.vercel.app/",
           "https://milad-mehri.github.io/",
           "https://headstarter.co/",
           "https://www.google.com/", // replace with users saved links later
