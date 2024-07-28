@@ -4,7 +4,30 @@ import { useState, useEffect } from 'react';
 import Sidebar from '../../components/Sidebar';
 import ResultsDisplay from '../../components/ResultsDisplay';
 
-const Dashboard = () => {
+import { useAuth } from '../lib/AuthContext';
+import Logout from '../components/Logout';
+import { getServerSideProps } from 'next';
+import { auth } from '../lib/firebaseConfig';
+
+
+export const getServerSideProps = async (context) => {
+  const user = await auth.currentUser;
+
+  if (!user) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: { user },
+  };
+};
+
+const Dashboard = ({user}) => {
   const [links, setLinks] = useState([
     'https://milad-mehri.github.io/',
     'https://headstarter.co/',
@@ -57,8 +80,20 @@ const Dashboard = () => {
     fetchResults();
   }, [selectedLink]);
 
+
+  const { user } = useAuth();
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
+    
+    
     <div className="flex min-h-screen">
+      <h1>Welcome, {user?.displayName}</h1>
+      <Logout />
+
       <Sidebar links={links} onLinkSelect={handleLinkSelect} />
       <main className="flex-1 p-4 bg-gray-700 text-white">
         <div className="mb-4">
