@@ -4,14 +4,11 @@ const puppeteer = require("puppeteer");
 const validator = require("html-validator");
 
 export const analyze = async (url) => {
-    console.log (url)
   let score = {};
   try {
-    // Get important data
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
 
-    // Meta and title tags
     const metaTitle = $("title").text();
     score["metaTitle"] = metaTitle ? [100] : [0, "Missing"];
 
@@ -24,45 +21,11 @@ export const analyze = async (url) => {
     const goodDescription = metaDescription && metaDescription.length <= 140;
     score["goodDescription"] = goodDescription ? [100] : [0, "Too long"];
 
-    // Thumbnails
     const unfurlImage = $('meta[property="og:image"]').attr("content");
     score["unfurlImage"] = unfurlImage ? [100] : [0, "Missing"];
 
     const twitterImage = $('meta[name="twitter:image"]').attr("content");
     score["twitterImage"] = twitterImage ? [100] : [0, "Missing"];
-
-    // Image optimization
-    //   const images = $("img");
-    //   let imagesWithoutAlt = 0;
-    //   let imagesWithoutCaption = 0;
-
-    //   images.each((_, img) => {
-    //     if (!$(img).attr("alt")) imagesWithoutAlt++;
-    //     if (!$(img).attr("title")) imagesWithoutCaption++;
-    //   });
-
-    //   score["imagesWithoutAlt"] =
-    //     images.length > 0
-    //       ? [
-    //           ((images.length - imagesWithoutAlt) / images.length) * 100,
-    //           `Missing alt: ${imagesWithoutAlt}`,
-    //         ]
-    //       : [0, "No images"];
-    //   score["imagesWithoutCaption"] =
-    //     images.length > 0
-    //       ? [
-    //           ((images.length - imagesWithoutCaption) / images.length) * 100,
-    //           `Missing captions: ${imagesWithoutCaption}`,
-    //         ]
-    //       : [0, "No images"];
-
-    // Section tags for nav bar items ?
-
-    // Hyperlinks and button tags ?
-
-    // Image size and URL shorteners ?
-
-    // Page Loading Speed
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
@@ -79,7 +42,6 @@ export const analyze = async (url) => {
       `Page load time (ms): ${pageLoadTime}`,
     ];
 
-    // W3C Validation
     const validationOptions = {
       format: "json",
       data,
@@ -95,23 +57,53 @@ export const analyze = async (url) => {
         ? [100, "No validation errors"]
         : [100 - validationErrors, `${validationErrors} validation errors`];
 
-    // Mobile-Friendliness
     const viewport = $('meta[name="viewport"]').attr("content");
     score["mobileFriendliness"] = viewport
       ? [100, "Viewport tag present"]
       : [0, "No viewport tag"];
 
-    // Accessibility Checks
     const ariaRoles = $("[role]");
     score["accessibility"] = ariaRoles.length
       ? [100, `ARIA roles present: ${ariaRoles.length}`]
       : [0, "No ARIA roles"];
+
+
+    const images = $("img");
+    const imagesWithoutAlt = images.filter((_, img) => !$(img).attr("alt")).length;
+    score["imagesWithoutAlt"] = imagesWithoutAlt === 0 ? [100, "All images have alt attributes"] : [100 - (imagesWithoutAlt / images.length) * 100, `${imagesWithoutAlt} images missing alt attributes`];
+
+    const h1Count = $("h1").length;
+    score["headings"] = h1Count === 1 ? [100, "One H1 heading present"] : [0, `Found ${h1Count} H1 headings`];
+
+    const internalLinks = $('a[href^="/"], a[href^="#"]');
+    const externalLinks = $('a[href^="http"], a[href^="//"]');
+    score["internalLinks"] = [100, `${internalLinks.length} internal links`];
+    score["externalLinks"] = [100, `${externalLinks.length} external links`];
+
+    score["https"] = url.startsWith("https") ? [100, "Uses HTTPS"] : [0, "Does not use HTTPS"];
+
+    const canonical = $('link[rel="canonical"]').attr("href");
+    score["canonicalTag"] = canonical ? [100, "Canonical tag present"] : [0, "Canonical tag missing"];
+
+    try {
+      await axios.get(new URL("/robots.txt", url).toString());
+      score["robotsTxt"] = [100, "robots.txt present"];
+    } catch {
+      score["robotsTxt"] = [0, "robots.txt missing"];
+    }
+
+    try {
+      await axios.get(new URL("/sitemap.xml", url).toString());
+      score["sitemapXml"] = [100, "sitemap.xml present"];
+    } catch {
+      score["sitemapXml"] = [0, "sitemap.xml missing"];
+    }
+
+    const favicon = $('link[rel="icon"]').attr("href");
+    score["favicon"] = favicon ? [100, "Favicon present"] : [0, "Favicon missing"];
+
   } catch (e) {
-    // console.log(e)
     score["Link invalid"] = [0, "Error"];
   }
   return score;
 };
-
-// const websiteUrl = "https://milad-mehri.github.io/";
-// analyze(websiteUrl).then((score) => console.log(score));
