@@ -16,7 +16,7 @@ const Modal = ({ isOpen, onClose, results, link }) => {
 
         context.font = 'bold 24px "Lucida Console"';
         context.fillStyle = '#C9D1D9';
-        context.fillText('SEO Snap', 20, 40);
+        context.fillText('SEO-Snap.vercel.app', 20, 40);
         context.font = 'normal 24px "Lucida Console"';
         context.fillText(': Test your website for free!', 130, 40);
 
