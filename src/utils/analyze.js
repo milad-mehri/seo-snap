@@ -1,6 +1,5 @@
 const axios = require("axios");
 const cheerio = require("cheerio");
-const chromium = require('chrome-aws-lambda');
 const validator = require("html-validator");
 
 export const analyze = async (url) => {
@@ -26,27 +25,6 @@ export const analyze = async (url) => {
 
     const twitterImage = $('meta[name="twitter:image"]').attr("content");
     score["twitterImage"] = twitterImage ? [100] : [0, "Missing"];
-
-    const browser = await chromium.puppeteer.launch({
-      args: chromium.args,
-      defaultViewport: chromium.defaultViewport,
-      executablePath: await chromium.executablePath,
-      headless: chromium.headless,
-    });
-
-    const page = await browser.newPage();
-    await page.goto(url);
-    const performanceTiming = JSON.parse(
-      await page.evaluate(() => JSON.stringify(window.performance.timing))
-    );
-    const pageLoadTime =
-      performanceTiming.loadEventEnd - performanceTiming.navigationStart;
-    await browser.close();
-
-    score["pageLoadTime"] = [
-      100 - Math.min(pageLoadTime / 100, 100),
-      `Page load time (ms): ${pageLoadTime}`,
-    ];
 
     const validationOptions = {
       format: "json",
