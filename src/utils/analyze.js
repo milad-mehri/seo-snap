@@ -9,24 +9,68 @@ export const analyze = async (url) => {
     const { data } = await axios.get(url);
     const $ = cheerio.load(data);
 
+    // HTTPS Check
+    score["https"] = url.startsWith("https") ? [100, "Uses HTTPS"] : [0, "Does not use HTTPS"];
+
+    // Meta and title tags
     const metaTitle = $("title").text();
-    score["metaTitle"] = metaTitle ? [100] : [0, "Missing"];
+    score["metaTitle"] = metaTitle ? [100, "Meta title present"] : [0, "Missing meta title"];
 
     const metaDescription = $('meta[name="description"]').attr("content");
-    score["metaDescription"] = metaDescription ? [100] : [0, "Missing"];
+    score["metaDescription"] = metaDescription ? [100, "Meta description present"] : [0, "Missing meta description"];
 
     const metaKeywords = $('meta[name="keywords"]').attr("content");
-    score["metaKeywords"] = metaKeywords ? [100] : [0, "Missing"];
+    score["metaKeywords"] = metaKeywords ? [100, "Meta keywords present"] : [0, "Missing meta keywords"];
 
     const goodDescription = metaDescription && metaDescription.length <= 140;
-    score["goodDescription"] = goodDescription ? [100] : [0, "Too long"];
+    score["goodDescription"] = goodDescription ? [100, "Meta description is of good length"] : [0, "Meta description too long"];
 
+    // Canonical Tag
+    const canonical = $('link[rel="canonical"]').attr("href");
+    score["canonicalTag"] = canonical ? [100, "Canonical tag present"] : [0, "Canonical tag missing"];
+
+    // robots.txt and sitemap.xml
+    try {
+      await axios.get(new URL("/robots.txt", url).toString());
+      score["robotsTxt"] = [100, "robots.txt present"];
+    } catch {
+      score["robotsTxt"] = [0, "robots.txt missing"];
+    }
+
+    try {
+      await axios.get(new URL("/sitemap.xml", url).toString());
+      score["sitemapXml"] = [100, "sitemap.xml present"];
+    } catch {
+      score["sitemapXml"] = [0, "sitemap.xml missing"];
+    }
+
+    // Favicon
+    const favicon = $('link[rel="icon"]').attr("href");
+    score["favicon"] = favicon ? [100, "Favicon present"] : [0, "Favicon missing"];
+
+    // Thumbnails
     const unfurlImage = $('meta[property="og:image"]').attr("content");
-    score["unfurlImage"] = unfurlImage ? [100] : [0, "Missing"];
+    score["unfurlImage"] = unfurlImage ? [100, "Unfurl image present"] : [0, "Missing unfurl image"];
 
     const twitterImage = $('meta[name="twitter:image"]').attr("content");
-    score["twitterImage"] = twitterImage ? [100] : [0, "Missing"];
+    score["twitterImage"] = twitterImage ? [100, "Twitter image present"] : [0, "Missing Twitter image"];
 
+    // Headings
+    const h1Count = $("h1").length;
+    score["headings"] = h1Count === 1 ? [100, "One H1 heading present"] : [0, `Found ${h1Count} H1 headings`];
+
+    // Internal and External Links
+    const internalLinks = $('a[href^="/"], a[href^="#"]');
+    const externalLinks = $('a[href^="http"], a[href^="//"]');
+    score["internalLinks"] = [100, `${internalLinks.length} internal links`];
+    score["externalLinks"] = [100, `${externalLinks.length} external links`];
+
+    // Image optimization
+    const images = $("img");
+    const imagesWithoutAlt = images.filter((_, img) => !$(img).attr("alt")).length;
+    score["imagesWithoutAlt"] = imagesWithoutAlt === 0 ? [100, "All images have alt attributes"] : [100 - (imagesWithoutAlt / images.length) * 100, `${imagesWithoutAlt} images missing alt attributes`];
+
+    // Page Loading Speed
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
     await page.goto(url);
@@ -42,6 +86,7 @@ export const analyze = async (url) => {
       `Page load time (ms): ${pageLoadTime}`,
     ];
 
+    // W3C Validation
     const validationOptions = {
       format: "json",
       data,
@@ -57,54 +102,19 @@ export const analyze = async (url) => {
         ? [100, "No validation errors"]
         : [100 - validationErrors, `${validationErrors} validation errors`];
 
+    // Mobile-Friendliness
     const viewport = $('meta[name="viewport"]').attr("content");
     score["mobileFriendliness"] = viewport
       ? [100, "Viewport tag present"]
       : [0, "No viewport tag"];
 
+    // Accessibility Checks
     const ariaRoles = $("[role]");
     score["accessibility"] = ariaRoles.length
       ? [100, `ARIA roles present: ${ariaRoles.length}`]
       : [0, "No ARIA roles"];
-
-
-    const images = $("img");
-    const imagesWithoutAlt = images.filter((_, img) => !$(img).attr("alt")).length;
-    score["imagesWithoutAlt"] = imagesWithoutAlt === 0 ? [100, "All images have alt attributes"] : [100 - (imagesWithoutAlt / images.length) * 100, `${imagesWithoutAlt} images missing alt attributes`];
-
-    const h1Count = $("h1").length;
-    score["headings"] = h1Count === 1 ? [100, "One H1 heading present"] : [0, `Found ${h1Count} H1 headings`];
-
-    const internalLinks = $('a[href^="/"], a[href^="#"]');
-    const externalLinks = $('a[href^="http"], a[href^="//"]');
-    score["internalLinks"] = [100, `${internalLinks.length} internal links`];
-    score["externalLinks"] = [100, `${externalLinks.length} external links`];
-
-    score["https"] = url.startsWith("https") ? [100, "Uses HTTPS"] : [0, "Does not use HTTPS"];
-
-    const canonical = $('link[rel="canonical"]').attr("href");
-    score["canonicalTag"] = canonical ? [100, "Canonical tag present"] : [0, "Canonical tag missing"];
-
-    try {
-      await axios.get(new URL("/robots.txt", url).toString());
-      score["robotsTxt"] = [100, "robots.txt present"];
-    } catch {
-      score["robotsTxt"] = [0, "robots.txt missing"];
-    }
-
-    try {
-      await axios.get(new URL("/sitemap.xml", url).toString());
-      score["sitemapXml"] = [100, "sitemap.xml present"];
-    } catch {
-      score["sitemapXml"] = [0, "sitemap.xml missing"];
-    }
-
-    const favicon = $('link[rel="icon"]').attr("href");
-    score["favicon"] = favicon ? [100, "Favicon present"] : [0, "Favicon missing"];
-
   } catch (e) {
-    console.log(e)
-    score = {}
+    console.log(e);
     score["Link invalid"] = [0, "Error"];
   }
   return score;
