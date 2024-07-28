@@ -38,3 +38,23 @@ body {
     text-wrap: balance;
   }
 }
+
+@media (max-width: 1000px) {
+  .hidden-sm {
+    display: none !important;
+  }
+}
+
+@media (max-width: 750px) {
+  .hidden-md {
+    display: none !important;
+  }
+}
+
+@media (max-width: 375px) {
+  .hidden-lg {
+    display: none !important;
+  }
+}
+
+

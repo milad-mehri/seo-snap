@@ -8,11 +8,11 @@ const ResultsDisplay = ({ results }) => {
     const getStatusColor = (status) => {
       switch (status) {
         case 'Success':
-          return 'text-green-500';
+          return 'text-success';
         case 'Warning':
-          return 'text-yellow-500';
+          return 'text-warning';
         default:
-          return 'text-red-500';
+          return 'text-error';
       }
     };
   
@@ -23,11 +23,11 @@ const ResultsDisplay = ({ results }) => {
           const statusColor = getStatusColor(status);
   
           return (
-            <div key={index} className="flex justify-between p-2 my-2 bg-sidebar-bg rounded">
+            <div key={index} className="flex justify-between p-2 my-2 bg-sidebar-item-bg rounded">
               <span className="text-text-secondary font-semibold w-1/4">{key}</span>
               <span className={`font-semibold w-1/4 ${statusColor}`}>{status}</span>
-              <span className={`font-semibold ${statusColor} w-1/4`}>{score}</span>
-              <span className="font-semibold text-gray-500 w-1/4">{message || 'No message'}</span>
+              <span className="font-semibold text-success w-1/4 hidden sm:inline">{score}</span>
+              <span className="font-semibold text-gray-500 w-1/4 hidden md:inline">{message || 'No message'}</span>
             </div>
           );
         })}

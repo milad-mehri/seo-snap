@@ -108,7 +108,7 @@ const Dashboard = () => {
     <div className={`flex min-h-screen bg-main-bg text-text-primary ${inter.className}`}>
       {isClient && (
         <>
-          <Sidebar
+          <Sidebar className="hidden lg:inline"
             links={links}
             selectedLink={selectedLink}
             onLinkSelect={handleLinkSelect}
