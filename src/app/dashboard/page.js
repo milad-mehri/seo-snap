@@ -167,7 +167,7 @@ const Dashboard = () => {
                   {selectedLink}{" "}
                 </a>
               </h2>
-              {error && <p className="text-error">{error}</p>}
+              {/* {error && <p className="text-error">{error}</p>} */}
               {loading ? (
                 <p>Loading...</p>
               ) : (
