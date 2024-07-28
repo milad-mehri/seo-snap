@@ -133,7 +133,7 @@ const Dashboard = () => {
                 </button>
               </div>
               <div className="flex items-center mt-2">
-                <input
+                {/* <input
                   type="checkbox"
                   id="shareLink"
                   checked={shareLink}
@@ -142,7 +142,7 @@ const Dashboard = () => {
                 />
                 <label htmlFor="shareLink" className="text-text-secondary">
                   Share link on SEO snap to get more views (optional)
-                </label>
+                </label> */}
               </div>
             </div>
             <div ref={resultsRef}>

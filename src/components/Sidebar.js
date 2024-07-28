@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import SidebarItem from './SidebarItem';
 
-const Sidebar = ({ links, selectedLink, onLinkSelect, onLinkRemove }) => {
+const Sidebar = ({ links, selectedLink, onLinkSelect, onRemoveLink }) => {
   const [internalSelectedLink, setInternalSelectedLink] = useState(selectedLink);
 
   useEffect(() => {
@@ -23,7 +23,7 @@ const Sidebar = ({ links, selectedLink, onLinkSelect, onLinkRemove }) => {
             link={link}
             isSelected={link === internalSelectedLink}
             onClick={handleLinkClick}
-            onRemove={onLinkRemove}
+            onRemove={onRemoveLink}
           />
         ))}
       </ul>
