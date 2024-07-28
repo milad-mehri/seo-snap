@@ -1,7 +1,7 @@
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Script from "next/script";
-
+import { Analytics } from "@vercel/analytics/react"
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -18,6 +18,8 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+      <Analytics />
+
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-STVE6GRH4C"
           strategy="afterInteractive"
