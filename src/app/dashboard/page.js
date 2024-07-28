@@ -1,29 +1,31 @@
 "use client";
 
-import { useState, useEffect, useRef } from 'react';
-import Sidebar from '../../components/Sidebar';
-import ResultsDisplay from '../../components/ResultsDisplay';
-import Modal from '../../components/Modal';
-import { Inter } from 'next/font/google';
-import Cookies from 'js-cookie';
+import { useState, useEffect, useRef } from "react";
+import Sidebar from "../../components/Sidebar";
+import ResultsDisplay from "../../components/ResultsDisplay";
+import Modal from "../../components/Modal";
+import { Inter } from "next/font/google";
+import Cookies from "js-cookie";
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ subsets: ["latin"] });
 
 const Dashboard = () => {
   const [links, setLinks] = useState(() => {
-    const savedLinks = Cookies.get('seoSnapLinks');
-    return savedLinks ? JSON.parse(savedLinks) : [
-      'https://milad-mehri.github.io/',
-      'https://headstarter.co/',
-      'https://www.google.com/' // replace with users saved links later
-    ];
+    const savedLinks = Cookies.get("seoSnapLinks");
+    return savedLinks
+      ? JSON.parse(savedLinks)
+      : [
+          "https://milad-mehri.github.io/",
+          "https://headstarter.co/",
+          "https://www.google.com/", // replace with users saved links later
+        ];
   });
 
   const [selectedLink, setSelectedLink] = useState(links[0]);
   const [results, setResults] = useState({});
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
-  const [newLink, setNewLink] = useState('');
+  const [error, setError] = useState("");
+  const [newLink, setNewLink] = useState("");
   const [shareLink, setShareLink] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const resultsRef = useRef(null);
@@ -34,8 +36,17 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    Cookies.set('seoSnapLinks', JSON.stringify(links), { expires: 7 });
+    Cookies.set("seoSnapLinks", JSON.stringify(links), { expires: 7 });
   }, [links]);
+
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
 
   const handleLinkSelect = (link) => {
     setSelectedLink(link);
@@ -43,21 +54,27 @@ const Dashboard = () => {
 
   const handleAddLink = () => {
     if (newLink) {
-      const trimmedLink = newLink.replace(/\/+$/, '');
+      const trimmedLink = newLink.replace(/\/+$/, "");
+      if (!isValidUrl(trimmedLink)) {
+        setError("Invalid URL. Please enter a valid link.");
+        return;
+      }
       if (links.includes(trimmedLink)) {
-        setSelectedLink(trimmedLink); // Select the existing link
+        setSelectedLink(trimmedLink);
+        setError("Duplicate link. Selected the existing link.");
       } else if (links.length < 20) {
         setLinks([...links, trimmedLink]);
-        setSelectedLink(trimmedLink); // Select the new link
+        setSelectedLink(trimmedLink);
+        setError("");
       } else {
-        setError('Maximum of 20 links allowed.');
+        setError("Maximum of 20 links allowed.");
       }
-      setNewLink('');
+      setNewLink("");
     }
   };
 
   const handleInputKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleAddLink();
     }
   };
@@ -66,7 +83,7 @@ const Dashboard = () => {
     const updatedLinks = links.filter((l) => l !== link);
     setLinks(updatedLinks);
     if (selectedLink === link) {
-      setSelectedLink(updatedLinks.length ? updatedLinks[0] : '');
+      setSelectedLink(updatedLinks.length ? updatedLinks[0] : "");
     }
   };
 
@@ -78,11 +95,11 @@ const Dashboard = () => {
     const fetchResults = async () => {
       try {
         setLoading(true);
-        setError('');
-        const response = await fetch('/api/analyze', {
-          method: 'POST',
+        setError("");
+        const response = await fetch("/api/analyze", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
           body: JSON.stringify({ url: selectedLink }),
         });
@@ -92,8 +109,8 @@ const Dashboard = () => {
         const result = await response.json();
         setResults(result);
       } catch (error) {
-        console.error('Failed to fetch analysis results:', error);
-        setError('Failed to fetch analysis results.');
+        console.error("Failed to fetch analysis results:", error);
+        setError("Failed to fetch analysis results.");
       } finally {
         setLoading(false);
       }
@@ -105,10 +122,13 @@ const Dashboard = () => {
   }, [selectedLink]);
 
   return (
-    <div className={`flex min-h-screen bg-main-bg text-text-primary ${inter.className}`}>
+    <div
+      className={`flex min-h-screen bg-main-bg text-text-primary ${inter.className}`}
+    >
       {isClient && (
         <>
-          <Sidebar className="hidden lg:inline"
+          <Sidebar
+            className="hidden lg:inline"
             links={links}
             selectedLink={selectedLink}
             onLinkSelect={handleLinkSelect}
@@ -133,22 +153,26 @@ const Dashboard = () => {
                 </button>
               </div>
               <div className="flex items-center mt-2">
-                {/* <input
-                  type="checkbox"
-                  id="shareLink"
-                  checked={shareLink}
-                  onChange={(e) => setShareLink(e.target.checked)}
-                  className="mr-2"
-                />
-                <label htmlFor="shareLink" className="text-text-secondary">
-                  Share link on SEO snap to get more views (optional)
-                </label> */}
+                {error && <p className="text-error">{error}</p>}
               </div>
             </div>
             <div ref={resultsRef}>
-              <h2 className="text-xl font-semibold italics mb-4">Results for: <a href={selectedLink} target='_blank' className='hover:underline italic font-normal'>{selectedLink} </a></h2>
-              {error && <p className="text-error">{error}</p>}
-              {loading ? <p>Loading...</p> : <ResultsDisplay results={results} />}
+              <h2 className="text-xl font-semibold italics mb-4">
+                Results for:{" "}
+                <a
+                  href={selectedLink}
+                  target="_blank"
+                  className="hover:underline italic font-normal"
+                >
+                  {selectedLink}
+                </a>
+              </h2>
+              {/* {error && <p className="text-error">{error}</p>} */}
+              {loading ? (
+                <p>Loading...</p>
+              ) : (
+                <ResultsDisplay results={results} />
+              )}
             </div>
             {!loading && Object.keys(results).length > 0 && (
               <button
@@ -159,7 +183,12 @@ const Dashboard = () => {
               </button>
             )}
           </main>
-          <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} results={results} link={selectedLink} />
+          <Modal
+            isOpen={isModalOpen}
+            onClose={() => setIsModalOpen(false)}
+            results={results}
+            link={selectedLink}
+          />
         </>
       )}
     </div>
