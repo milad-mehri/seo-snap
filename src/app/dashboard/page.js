@@ -39,15 +39,6 @@ const Dashboard = () => {
     Cookies.set("seoSnapLinks", JSON.stringify(links), { expires: 7 });
   }, [links]);
 
-  const isValidUrl = (string) => {
-    try {
-      new URL(string);
-      return true;
-    } catch (_) {
-      return false;
-    }
-  };
-
   const handleLinkSelect = (link) => {
     setSelectedLink(link);
   };
@@ -56,20 +47,29 @@ const Dashboard = () => {
     if (newLink) {
       const trimmedLink = newLink.replace(/\/+$/, "");
       if (!isValidUrl(trimmedLink)) {
-        setError("Invalid URL. Please enter a valid link.");
+        setError("Please enter a valid URL.");
         return;
       }
       if (links.includes(trimmedLink)) {
-        setSelectedLink(trimmedLink);
-        setError("Duplicate link. Selected the existing link.");
+        setSelectedLink(trimmedLink); // Select the existing link
+        setError("Link already exists.");
       } else if (links.length < 20) {
         setLinks([...links, trimmedLink]);
-        setSelectedLink(trimmedLink);
+        setSelectedLink(trimmedLink); // Select the new link
         setError("");
       } else {
         setError("Maximum of 20 links allowed.");
       }
       setNewLink("");
+    }
+  };
+
+  const isValidUrl = (string) => {
+    try {
+      new URL(string);
+      return true;
+    } catch (_) {
+      return false;
     }
   };
 
@@ -128,13 +128,14 @@ const Dashboard = () => {
       {isClient && (
         <>
           <Sidebar
-            className="hidden lg:inline"
             links={links}
             selectedLink={selectedLink}
             onLinkSelect={handleLinkSelect}
             onRemoveLink={handleRemoveLink}
           />
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-6 ml-[20%]">
+            {" "}
+            {/* Add margin to the main content */}
             <div className="mb-4">
               <div className="flex items-center space-x-2">
                 <input
@@ -152,9 +153,7 @@ const Dashboard = () => {
                   ANALYZE
                 </button>
               </div>
-              <div className="flex items-center mt-2">
-                {error && <p className="text-error">{error}</p>}
-              </div>
+              {error && <p className="text-error mt-2">{error}</p>}
             </div>
             <div ref={resultsRef}>
               <h2 className="text-xl font-semibold italics mb-4">
@@ -164,10 +163,10 @@ const Dashboard = () => {
                   target="_blank"
                   className="hover:underline italic font-normal"
                 >
-                  {selectedLink}
+                  {selectedLink}{" "}
                 </a>
               </h2>
-              {/* {error && <p className="text-error">{error}</p>} */}
+              {error && <p className="text-error">{error}</p>}
               {loading ? (
                 <p>Loading...</p>
               ) : (
