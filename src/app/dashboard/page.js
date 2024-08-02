@@ -17,7 +17,7 @@ const Dashboard = () => {
       : [
         "https://seo-snap.vercel.app/",
           "https://milad-mehri.github.io/",
-          "https://headstarter.co/",
+        //   "https://headstarter.co/",
           "https://www.google.com/", // replace with users saved links later
         ];
   });
